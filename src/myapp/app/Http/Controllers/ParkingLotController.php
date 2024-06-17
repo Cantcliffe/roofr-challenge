@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Spot;
 
+use Illuminate\Http\Request;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Http\Requests\ParkingLotRequest;
 
@@ -34,6 +35,20 @@ class ParkingLotController extends Controller
     {
         $this->spot = $spot;
         $this->response = $response;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function parkingLotStatus()
+    {
+        $spotsWithVehicle = Spot::has('vehicle')->get()->pluck('id')->toArray();
+        $spotsWithoutVehicle = Spot::doesntHave('vehicle')->get()->pluck('id')->toArray();
+
+        return $this->response->json(["emptySpots" => $spotsWithoutVehicle, "occupiedSpots" => $spotsWithVehicle], 200);
+
     }
 
     /**
